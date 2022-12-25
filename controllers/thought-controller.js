@@ -68,3 +68,57 @@ const thoughtController = {
       })
       .catch((err) => res.status(400).json(err));
   },
+  // DELETE to remove thought by _id
+  removeThought({ params }, res) {
+    Thought.findOneAndDelete({ _id: params.thoughtId })
+      .then((deletedThought) => {
+        if (!deletedThought) {
+          return res.status(404).json({ message: "No thought with this id!" });
+        }
+        console.log(deletedThought);
+        User.findOneAndUpdate(
+          { username: deletedThought.username },
+          { $pull: { thoughts: params.thoughtId } },
+          { new: true }
+        ).then((dbUserData) => {
+          if (!dbUserData) {
+            res.status(404).json({ message: "No user found with this id!" });
+            return;
+          }
+          res.json(dbUserData);
+        });
+      })
+      .catch((err) => res.json(err));
+  },
+  //   POST to create reaction
+  addReaction({ params, body }, res) {
+    Thought.findOneAndUpdate(
+      { _id: params.thoughtId },
+      { $push: { reactions: body } },
+      { new: true, runValidators: true }
+    )
+      .then((dbUserData) => {
+        if (!dbUserData) {
+          res.status(404).json({ message: "No user found with this id!" });
+          return;
+        }
+        res.json(dbUserData);
+      })
+      .catch((err) => res.json(err));
+  },
+  // DELETE to pull and remove reaction by reaction's reactionId
+  removeReaction({ params }, res) {
+    Thought.findOneAndUpdate(
+      { _id: params.thoughtId },
+
+      // take a specific response out of the replies array
+      // where replyId coincides with params' value. replyId entered from the route
+      { $pull: { reactions: { reactionId: params.reactionId } } },
+      { new: true }
+    )
+      .then((dbUserData) => res.json(dbUserData))
+      .catch((err) => res.json(err));
+  },
+};
+
+module.exports = thoughtController;
