@@ -4,9 +4,8 @@ const thoughtController = {
   // GET all thoughts
   getAllThoughts(req, res) {
     Thought.find({})
-      .populate({
-        path: "thoughts",
-      })
+     
+     
       .sort({ _id: -1 })
       .then((dbUserData) => res.json(dbUserData))
       .catch((err) => {
@@ -36,7 +35,7 @@ const thoughtController = {
       .then(({ _id }) => {
         console.log(_id);
         return User.findOneAndUpdate(
-          { _id: body.userId },
+          { _id: params.userId },
           { $push: { thoughts: _id } },
           { new: true }
         );
@@ -93,7 +92,7 @@ const thoughtController = {
   //   POST to create reaction
   addReaction({ params, body }, res) {
     Thought.findOneAndUpdate(
-      { _id: params.thoughtId },
+      { _id: params.id },
       { $push: { reactions: body } },
       { new: true, runValidators: true }
     )
@@ -109,7 +108,7 @@ const thoughtController = {
   // DELETE to pull and remove reaction by reaction's reactionId
   removeReaction({ params }, res) {
     Thought.findOneAndUpdate(
-      { _id: params.thoughtId },
+      { _id: params.id },
 
       // take a specific response out of the replies array
       // where replyId coincides with params' value. replyId entered from the route
