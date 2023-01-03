@@ -108,7 +108,7 @@ const thoughtController = {
   // DELETE to pull and remove reaction by reaction's reactionId
   removeReaction({ params }, res) {
     Thought.findOneAndUpdate(
-      { _id: params.id },
+      { _id: params.d },
 
       // take a specific response out of the replies array
       // where replyId coincides with params' value. replyId entered from the route
